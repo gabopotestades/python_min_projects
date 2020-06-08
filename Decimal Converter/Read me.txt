@@ -1,0 +1,1 @@
+Inputs a decimal number and converts it to a 32 or 64 bit floating point number.
