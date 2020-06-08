@@ -1,0 +1,6 @@
+Uses concepts of Automata Theory.
+
+Inputs an XML and outputs if it is valid or invalid.
+
+Note:
+Does not support metadata and comments.
