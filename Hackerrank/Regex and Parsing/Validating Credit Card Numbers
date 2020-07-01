@@ -1,0 +1,17 @@
+import re 
+
+#Get n inputs
+for x in range(0, int(input())):
+
+    s = input()
+
+    #Check if credit card starts with 4,5,6 or 4 then hypen characters
+    if re.match(r'^[456](\d{15}$|\d{3}(?:-\d{4}){3})$', s):
+
+    	#Check if no consecutive 4 same number
+        if not re.match(r'^.*(.)\1\1\1.*$', s.replace('-', '')):
+            print('Valid')
+        else:
+            print('Invalid')
+    else:
+        print('Invalid')
