@@ -244,7 +244,7 @@ if __name__ == '__main__':
         firstBatch.join()
         secondBatch.join()
 
-    print('test')
+    print('test1')
     print("--- %s seconds ---" % (time.time() - start_time))
 
 
