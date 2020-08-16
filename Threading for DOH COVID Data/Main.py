@@ -103,8 +103,8 @@ class sThread(threading.Thread):
             total_casesThread += 1
             dictAgeThread[row[2]] += 1
             dictSexThread[row[3]] += 1
-            dictAdmitted[row[10]] += 1
-            dictHealthStatus[row[15]] += 1
+            dictAdmittedThread[row[10]] += 1
+            dictHealthStatusThread[row[15]] += 1
 
             if row[7]: 
                 dateDied = datetime.datetime.strptime(row[7], "%Y-%m-%d")
@@ -201,13 +201,13 @@ if __name__ == '__main__':
         header = next(csv_reader)
         data = list(csv_reader)
 
-    # with open(file_name2, 'r') as read_obj:
-    #     csv_reader = reader(read_obj)
-    #     header = next(csv_reader)
-    #     data.extend(list(csv_reader))
-    # for i in range(2):
-    #     clone = data.copy()
-    #     data.extend(clone)
+    with open(file_name2, 'r') as read_obj:
+        csv_reader = reader(read_obj)
+        header = next(csv_reader)
+        data.extend(list(csv_reader))
+    for i in range(2):
+        clone = data.copy()
+        data.extend(clone)
 
     if mode == 'S':
         
@@ -244,6 +244,7 @@ if __name__ == '__main__':
         firstBatch.join()
         secondBatch.join()
 
+    print('test')
     print("--- %s seconds ---" % (time.time() - start_time))
 
 
