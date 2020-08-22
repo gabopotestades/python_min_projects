@@ -96,7 +96,7 @@ class hospitalsThread(threading.Thread):
         for row in hospitals_data:
             
             if row[2] in listHospitals:
-                pass
+                continue
             
             total_Hospitals += 1
             listHospitals.append(row[2])
@@ -140,6 +140,7 @@ class inventoryThread(threading.Thread):
         self.fileName = fileName
     def run(self):
         global inventory_data
+        global inventory_status_fname
         global gown
         global goggles
         global gloves
@@ -343,7 +344,7 @@ class printInformation():
         f = open(self.fileName, "w+")
 
         f.write('Current Inventory: \n')
-        f.write('Gloves -  {0}\n'.format(bed_Occupied))
+        f.write('Gloves -  {0}\n'.format(gloves))
         f.write('Goggles -  {0}\n'.format(goggles))
         f.write('Gloves -  {0}\n'.format(gloves))
         f.write('Shoe Cover -  {0}\n'.format(shoe_Cover))
@@ -540,7 +541,12 @@ if __name__ == '__main__':
         printInformation(casesFileName, 'cases')
 
         for row in hospitals_data:
+            
+            if row[2] in listHospitals:
+                continue
+
             total_Hospitals += 1
+            listHospitals.append(row[2])
             icu_Vacant += int(row[6])
             icu_Occupied += int(row[7])
             isoBeds_Vacant += int(row[8])
@@ -575,7 +581,7 @@ if __name__ == '__main__':
         printInformation(hospitalFileName, 'hospitals')
 
         for row in inventory_data:
-
+            
             gown += int(row[6])
             gloves += int(row[7])
             head_Cover += int(row[8])
@@ -593,12 +599,14 @@ if __name__ == '__main__':
         casesInformationThread = caseThread(1, casesFileName)
         hospitalsInformationThread = hospitalsThread(2, hospitalFileName)
         inventoryInformationThread = inventoryThread(3, inventoryFileName)
-        casesInformationThread.start()
+
         hospitalsInformationThread.start()
+        casesInformationThread.start()
         inventoryInformationThread.start()
+
+        inventoryInformationThread.join()
         casesInformationThread.join()
         hospitalsInformationThread.join()
-        inventoryInformationThread.join()
 
     print('\n Time processed::')
     print("--- %s seconds ---" % (time.time() - start_time))
