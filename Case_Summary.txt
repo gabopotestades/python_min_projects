@@ -1,0 +1,82 @@
+Cases per Age:
+0 to 4 : 1901
+5 to 9 : 1534
+10 to 14 : 2230
+15 to 19 : 3871
+20 to 24 : 14747
+25 to 29 : 21186
+30 to 34 : 18970
+35 to 39 : 14637
+40 to 44 : 12535
+45 to 49 : 10706
+50 to 54 : 9553
+55 to 59 : 8036
+60 to 64 : 6109
+65 to 69 : 4338
+70 to 74 : 3013
+75 to 79 : 1623
+80+ : 1717
+NOT STATED : 2832
+=================================================
+Sex count: 
+FEMALE : 61097
+MALE : 78440
+NOT STATED : 1
+=================================================
+Current health status for every case: 
+RECOVERED : 68432
+ASYMPTOMATIC : 4946
+MILD : 63021
+SEVERE : 433
+CRITICAL : 394
+DIED : 2312
+NOT STATED : 0
+=================================================
+Admitted to hospital: 
+NO : 126940
+YES : 12437
+NOT STATED : 161
+=================================================
+Cases per region: 
+NOT STATED : 4929
+BARMM : 498
+CAR : 453
+CARAGA : 317
+NCR : 76870
+REPATRIATE : 6399
+Region I: Ilocos Region : 671
+Region II: Cagayan Valley : 519
+Region III: Central Luzon : 4166
+Region IV-A: CALABARZON : 18054
+Region IV-B: MIMAROPA : 412
+Region IX: Zamboanga Peninsula : 1021
+Region V: Bicol Region : 886
+Region VI: Western Visayas : 2317
+Region VII: Central Visayas : 17784
+Region VIII: Eastern Visayas : 1355
+Region X: Northern Mindanao : 862
+Region XI: Davao Region : 1572
+Region XII: SOCCSKSARGEN : 453
+=================================================
+Recoveries per month: 
+JANUARY : 1
+MARCH : 323
+APRIL : 1803
+MAY : 2982
+JUNE : 4087
+JULY : 8632
+AUGUST : 1329
+=================================================
+Deaths per month: 
+FEBRUARY : 1
+MARCH : 397
+APRIL : 501
+MAY : 287
+JUNE : 514
+JULY : 479
+AUGUST : 58
+=================================================
+Total cases: 139538
+Total deaths: 2237
+Total recoveries: 19157
+Total active cases: 118144
