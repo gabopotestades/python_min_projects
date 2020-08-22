@@ -6,29 +6,13 @@ import threading
 import multiprocessing
 from csv import reader
 
-class sProcess(multiprocessing.Process):
-    def __init__(self, processID):
-        multiprocessing.Process.__init__(self)
-        self.processID = processID
-    
-    def run(self):
-        global data
-        #global lock
-        for item in data:
-            print(item)
-            break
-
-        #read data here
-
-class sThread(threading.Thread):
-    def __init__(self, threadID, startPoint, midPoint):
+class caseThread(threading.Thread):
+    def __init__(self, threadID, fileName):
         threading.Thread.__init__(self)
         self.id = threadID
-        self.startPoint = startPoint
-        self.endPoint = midPoint
+        self.fileName = fileName
     def run(self):
-        #print('Thread', self.id, ' has started')
-        global data
+        global case_data
         global total_cases
         global dictAge
         global dictSex
@@ -37,72 +21,8 @@ class sThread(threading.Thread):
         global dictMonthRecovered
         global dictMonthDied
         global dictCasesPerRegion
-        global shared_resource_lock
 
-        # total_casesThread = 0
-        # dictAgeThread = {
-        # '0 to 4': 0,
-        # '5 to 9' : 0,
-        # '10 to 14': 0,
-        # '15 to 19': 0,
-        # '20 to 24': 0,
-        # '25 to 29': 0,
-        # '30 to 34': 0,
-        # '35 to 39': 0,
-        # '40 to 44': 0,
-        # '45 to 49': 0,
-        # '50 to 54': 0,
-        # '55 to 59': 0,
-        # '60 to 64': 0,
-        # '65 to 69': 0,
-        # '70 to 74': 0,
-        # '75 to 79': 0,
-        # '80+': 0,
-        # '': 0
-        # }
-        # dictSexThread = { 'FEMALE' : 0, 'MALE': 0, '': 0 }
-        # dictAdmittedThread = { 'NO': 0, 'YES': 0, '': 0}
-        # dictHealthStatusThread = {
-        #     'RECOVERED': 0, 
-        #     'ASYMPTOMATIC' : 0, 
-        #     'MILD': 0, 
-        #     'SEVERE': 0,
-        #     'CRITICAL': 0,
-        #     'DIED': 0,
-        #     '': 0
-        # }
-        # dictMonthRecoveredThread = {
-        #     1: 0,
-        #     2: 0,
-        #     3: 0,
-        #     4: 0,
-        #     5: 0,
-        #     6: 0,
-        #     7: 0,
-        #     8: 0,
-        #     9: 0,
-        #     10: 0,
-        #     11: 0,
-        #     12: 0
-        # }
-        # dictMonthDiedThread = {
-        #     1: 0,
-        #     2: 0,
-        #     3: 0,
-        #     4: 0,
-        #     5: 0,
-        #     6: 0,
-        #     7: 0,
-        #     8: 0,
-        #     9: 0,
-        #     10: 0,
-        #     11: 0,
-        #     12: 0
-        # }
-        # dictCasesPerRegionThread = {}
-
-        for row in data[self.startPoint:self.endPoint]:
-            shared_resource_lock.acquire()
+        for row in case_data:
             total_cases += 1
             dictAge[row[2]] += 1
             dictSex[row[3]] += 1
@@ -120,10 +40,87 @@ class sThread(threading.Thread):
                 dictCasesPerRegion[row[11]] = 1
             else:
                 dictCasesPerRegion[row[11]] += 1
-            
-            shared_resource_lock.release()
+        
+        printInformation(self.fileName, 'cases')
+
+class printInformation():
+    def __init__(self, fileName, fileType):
+        self.fileName = fileName
+        self.fileType = fileType
+
+        if self.fileType == 'cases':
+            self.printCases()
+
+    def printCases(self):
+        global case_data
+        global total_cases
+        global dictAge
+        global dictSex
+        global dictAdmitted
+        global dictHealthStatus
+        global dictMonthRecovered
+        global dictMonthDied
+        global dictCasesPerRegion
+
+        f = open(self.fileName, "w+")
+
+        f.write('Cases per Age:\n')
+        for key, value in dictAge.items():
+            item = ifBlank if key == '' else key
+            f.write('{0} : {1}\n'.format(item, value))
+        f.write('=================================================\n')
+
+        f.write('Sex count: \n')
+        for key, value in dictSex.items():
+            item = ifBlank if key == '' else key
+            f.write('{0} : {1}\n'.format(item, value))
+        f.write('=================================================\n')
+        
+        f.write('Current health status for every case: \n')
+        for key, value in dictHealthStatus.items():
+            item = ifBlank if key == '' else key
+            f.write('{0} : {1}\n'.format(item, value))
+        f.write('=================================================\n')
+
+        f.write('Admitted to hospital: \n')
+        for key, value in dictAdmitted.items():
+            item = ifBlank if key == '' else key
+            f.write('{0} : {1}\n'.format(item, value))
+        f.write('=================================================\n')
+
+        f.write('Cases per region: \n')
+        for key in sorted(dictCasesPerRegion.keys()):
+            item = ifBlank if key == '' else key
+            value = dictCasesPerRegion[key]
+            f.write('{0} : {1}\n'.format(item, value))
+        f.write('=================================================\n')
+
+        recovered = 0
+        f.write('Recoveries per month: \n')
+        for key, value in dictMonthRecovered.items():
+            if value > 0:
+                f.write('{0} : {1}\n'.format(dictMonthName[key], value))
+                recovered += value
+        f.write('=================================================\n')
+    
+        f.write('Deaths per month: \n')
+        deaths = 0
+        for key, value in dictMonthDied.items():
+            if value > 0:
+                f.write('{0} : {1}\n'.format(dictMonthName[key], value))
+                deaths += value
+        f.write('=================================================\n')
+
+        f.write('Total cases: {0}\n'.format(total_cases))
+        active_cases = total_cases - (deaths + recovered)
+        f.write('Total deaths: {0}\n'.format(deaths))
+        f.write('Total recoveries: {0}\n'.format(recovered))
+        f.write('Total active cases: {0}\n'.format(active_cases))
+
+        f.close()
 
 if __name__ == '__main__':
+    
     #Set initial values
     mode = ''
     command = 'cls' if os.name == 'nt' else 'clear'
@@ -141,16 +138,18 @@ if __name__ == '__main__':
         11: 'NOVEMBER',
         12: 'DECEMBER'
     }
-    file_name = 'Threading for DOH COVID Data\DOH COVID Data Drop_ 20200811 - 04 Case Information.csv'
+    cases_fname = 'Threading for DOH COVID Data\DOH COVID Data Drop_ 20200811 - 04 Case Information.csv'
     file_name2 = 'Threading for DOH COVID Data\DOH COVID Data Drop_ 20200810 - 04 Case Information.csv'
+    hospital_status_fname = 'Threading for DOH COVID Data\DOH COVID Data Drop_ 20200811 - 05 DOH Data Collect - Daily Report.csv'
+    inventory_status_fname = 'Threading for DOH COVID Data\DOH COVID Data Drop_ 20200811 - 06 DOH Data Collect - Weekly Report.csv'
 
     #Choose S for serial and P for parallel
     while mode not in ['S', 'P']:
         os.system(command)
         mode = input('Select mode (S/P): ').upper()
 
-    #Set counters
-    data = []
+    #Set counters for Cases
+    case_data = []
     total_cases = 0
     dictAge = {
         '0 to 4': 0,
@@ -213,25 +212,58 @@ if __name__ == '__main__':
     }
     dictCasesPerRegion = {}
 
-    with open(file_name, 'r') as read_obj:
-        csv_reader = reader(read_obj)
-        header = next(csv_reader)
-        for item in csv_reader:
-            data.append(item)
+    #Set counters for Hospital status
+    hospitals_data = []
+    total_Hospitals = 0
+    icu_Occupied = 0
+    icu_Vacant = 0
+    bed_Occupied = 0
+    bed_Vacant = 0
+    isoBeds_Occupied = 0
+    isoBeds_Vacant = 0
+    mechVent_Occupied = 0
+    mechVent_Vacant = 0
+    icuNonCovid_Occupied = 0
+    icuNonCovid_Vacant = 0
+    nonICU_NonCovid_Occupied = 0
+    nonICU_NonCovid_Vacant = 0
+    mechVent_NonCovid_Occupied = 0
+    mechVent_NonCovid_Vacant = 0
+    doctorsQuarantined = 0
+    nursesQuarantined = 0
+    
 
-    with open(file_name2, 'r') as read_obj:
+    #Read files
+
+    #Cases
+    with open(cases_fname, 'r') as read_obj:
         csv_reader = reader(read_obj)
         header = next(csv_reader)
-        data.extend(list(csv_reader))
-    for i in range(1):
-        clone = data.copy()
-        data.extend(clone)
+        case_data = list(csv_reader)
+        # for item in csv_reader:
+        #     case_data.append(item)
+
+    #Hospitals
+    with open(hospital_status_fname, 'r') as read_obj:
+        csv_reader = reader(read_obj)
+        header = next(csv_reader)
+        hospitals_data = list(csv_reader)
+
+    # with open(file_name2, 'r') as read_obj:
+    #     csv_reader = reader(read_obj)
+    #     header = next(csv_reader)
+    #     case_data.extend(list(csv_reader))
+    # for i in range(1):
+    #     clone = case_data.copy()
+    #     case_data.extend(clone)
 
     start_time = time.time()
+    ifBlank = 'NOT STATED'
+    casesFileName = 'Case_Summary.txt'
 
     if mode == 'S':
         
-        for row in data:
+        for row in case_data:
             total_cases += 1
             dictAge[row[2]] += 1
             dictSex[row[3]] += 1
@@ -250,79 +282,13 @@ if __name__ == '__main__':
             else:
                 dictCasesPerRegion[row[11]] += 1
 
+        printInformation(casesFileName, 'cases')
+
     else:
-        shared_resource_lock = threading.Lock()
-        divideBy = 2
-        perDivision = math.ceil(len(data)/divideBy)
-        sections = []
-        section = 0
-        for n in range(divideBy):
-            section += perDivision
-            sections.append(section)
-
-        #lock = multiprocessing.Lock()
-        #pointer = multiprocessing.Value('i', 0)
         
-        firstBatch = sThread(1, 0, sections[0])
-        secondBatch = sThread(2, sections[0], sections[1])
-        #thirdBatch = sThread(3, sections[1], sections[2])
-        firstBatch.start()
-        secondBatch.start()
-        #thirdBatch.start()
-        firstBatch.join()
-        secondBatch.join()
-        #thirdBatch.join()
-
-    ifBlank = 'NOT STATED'
-
-    print('\nCases per Age:')
-    for key, value in dictAge.items():
-        item = ifBlank if key == '' else key
-        print(item, ':', value)
-
-    print('\nSex count:')
-    for key, value in dictSex.items():
-        item = ifBlank if key == '' else key
-        print(item, ':', value)
-    
-    print('\nCurrent health status for every case:')
-    for key, value in dictHealthStatus.items():
-        item = ifBlank if key == '' else key
-        print(item, ':', value)
-
-    print('\nAdmitted to hospital:')
-    for key, value in dictAdmitted.items():
-        item = ifBlank if key == '' else key
-        print(item, ':', value)
-
-    print('\nCases per region:')
-    for key in sorted(dictCasesPerRegion.keys()):
-        item = ifBlank if key == '' else key
-        value = dictCasesPerRegion[key]
-        print(item, '-', value)
-
-    recovered = 0
-    print('\nRecoveries per month:')
-    for key, value in dictMonthRecovered.items():
-        if value > 0:
-            #item = ifBlank if key == '' else key
-            print(dictMonthName[key], ': ', value)
-            recovered += value
- 
-    print('\nDeaths per month:')
-    deaths = 0
-    for key, value in dictMonthDied.items():
-        if value > 0:
-            #item = ifBlank if key == '' else key
-            print(dictMonthName[key], ': ', value)
-            deaths += value
-
-    print('\nTotal cases:', total_cases)
-    active_cases = total_cases - (deaths + recovered)
-    print('Total deaths:', deaths)
-    print('Total recoveries:', recovered)
-    print('Total active cases:', active_cases)
-
+        casesInformationThread = caseThread(1, casesFileName)
+        casesInformationThread.start()
+        casesInformationThread.join()
 
     print('\n Time processed::')
     print("--- %s seconds ---" % (time.time() - start_time))
