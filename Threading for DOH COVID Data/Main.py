@@ -1,6 +1,8 @@
 import os
 import time
 import math
+import pandas as pd
+import operator
 import datetime
 import threading
 import multiprocessing
@@ -13,6 +15,7 @@ class caseThread(threading.Thread):
         self.fileName = fileName
     def run(self):
         global case_data
+        global cases_fname
         global total_cases
         global dictAge
         global dictSex
@@ -21,6 +24,12 @@ class caseThread(threading.Thread):
         global dictMonthRecovered
         global dictMonthDied
         global dictCasesPerRegion
+
+        #Cases
+        with open(cases_fname, 'r') as read_obj:
+            csv_reader = reader(read_obj)
+            header = next(csv_reader)
+            case_data = list(csv_reader)
 
         for row in case_data:
             total_cases += 1
@@ -43,6 +52,124 @@ class caseThread(threading.Thread):
         
         printInformation(self.fileName, 'cases')
 
+class hospitalsThread(threading.Thread):
+    def __init__(self, threadID, fileName):
+        threading.Thread.__init__(self)
+        self.id = threadID
+        self.fileName = fileName
+    def run(self):
+        global hospital_status_fname
+        global hospitals_data
+        global listHospitals
+        global total_Hospitals
+        global icu_Occupied
+        global icu_Vacant
+        global bed_Occupied
+        global bed_Vacant
+        global isoBeds_Occupied
+        global isoBeds_Vacant
+        global mechVent_Occupied
+        global mechVent_Vacant
+        global icuNonCovid_Occupied
+        global icuNonCovid_Vacant
+        global nonICU_NonCovid_Occupied
+        global nonICU_NonCovid_Vacant
+        global mechVent_NonCovid_Occupied
+        global mechVent_NonCovid_Vacant
+        global doctorsQuarantined
+        global nursesQuarantined
+        global othersQuarantined
+        global doctorsAdmitted
+        global nursesAdmitted
+        global othersAdmitted
+        global total_Patients
+        global dict_Hospital_Per_Region
+
+        #Hospitals
+        with open(hospital_status_fname, 'r') as read_obj:
+            csv_reader = reader(read_obj)
+            header = next(csv_reader)
+            hospitals_data = pd.DataFrame(list(csv_reader), columns = header)
+            hospitals_data = hospitals_data.sort_values(['cfname','updateddate'], ascending = [True, False])
+            hospitals_data = hospitals_data.values.tolist()
+
+        for row in hospitals_data:
+            
+            if row[2] in listHospitals:
+                pass
+            
+            total_Hospitals += 1
+            listHospitals.append(row[2])
+            icu_Vacant += int(row[6])
+            icu_Occupied += int(row[7])
+            isoBeds_Vacant += int(row[8])
+            isoBeds_Occupied += int(row[9])
+            bed_Vacant += int(row[10])
+            bed_Occupied += int(row[11])
+            mechVent_Vacant += int(row[12])
+            mechVent_Occupied += int(row[13])
+
+            if row[14] != '': icuNonCovid_Vacant += float(row[14])
+            if row[15] != '': icuNonCovid_Occupied += float(row[15])
+            if row[16] != '': nonICU_NonCovid_Vacant += float(row[16])
+            if row[17] != '': nonICU_NonCovid_Occupied += float(row[17])
+            if row[18] != '': mechVent_NonCovid_Vacant += float(row[18])
+            if row[19] != '': mechVent_NonCovid_Occupied += float(row[19])
+
+            nursesQuarantined += int(row[20])
+            doctorsQuarantined += int(row[21])
+            othersQuarantined += int(row[22])
+
+            nursesAdmitted += int(row[23])
+            doctorsAdmitted += int(row[24])
+            othersAdmitted += int(row[25])
+
+            if row[41] != '': total_Patients += float(row[41])
+            
+            if row[46] not in dict_Hospital_Per_Region.keys():
+                dict_Hospital_Per_Region[row[46]] = 1
+            else:
+                dict_Hospital_Per_Region[row[46]] += 1
+
+        printInformation(self.fileName, 'hospitals')
+
+class inventoryThread(threading.Thread):
+    def __init__(self, threadID, fileName):
+        threading.Thread.__init__(self)
+        self.id = threadID
+        self.fileName = fileName
+    def run(self):
+        global inventory_data
+        global gown
+        global goggles
+        global gloves
+        global shoe_Cover
+        global head_Cover
+        global face_Shield
+        global surg_Mask
+        global n95_Mask
+        global coverAll
+
+        #Inventory
+        with open(inventory_status_fname, 'r') as read_obj:
+            csv_reader = reader(read_obj)
+            header = next(csv_reader)
+            inventory_data = list(csv_reader)
+
+        for row in inventory_data:
+
+            gown += int(row[6])
+            gloves += int(row[7])
+            head_Cover += int(row[8])
+            goggles += int(row[9])
+            coverAll += int(row[10])
+            shoe_Cover += int(row[11])
+            face_Shield += int(row[12])
+            surg_Mask += int(row[13])
+            n95_Mask += int(row[14])
+        
+        printInformation(inventoryFileName, 'inventory')
+
 class printInformation():
     def __init__(self, fileName, fileType):
         self.fileName = fileName
@@ -50,6 +177,10 @@ class printInformation():
 
         if self.fileType == 'cases':
             self.printCases()
+        elif self.fileType == 'hospitals':
+            self.printHospitals()
+        elif self.fileType == 'inventory':
+            self.printInventory()
 
     def printCases(self):
         global case_data
@@ -61,6 +192,7 @@ class printInformation():
         global dictMonthRecovered
         global dictMonthDied
         global dictCasesPerRegion
+        global ifBlank
 
         f = open(self.fileName, "w+")
 
@@ -119,6 +251,111 @@ class printInformation():
 
         f.close()
 
+    def printHospitals(self):
+        global hospitals_data
+        global total_Hospitals
+        global icu_Occupied
+        global icu_Vacant
+        global bed_Occupied
+        global bed_Vacant
+        global isoBeds_Occupied
+        global isoBeds_Vacant
+        global mechVent_Occupied
+        global mechVent_Vacant
+        global icuNonCovid_Occupied
+        global icuNonCovid_Vacant
+        global nonICU_NonCovid_Occupied
+        global nonICU_NonCovid_Vacant
+        global mechVent_NonCovid_Occupied
+        global mechVent_NonCovid_Vacant
+        global doctorsQuarantined
+        global nursesQuarantined
+        global othersQuarantined
+        global doctorsAdmitted
+        global nursesAdmitted
+        global othersAdmitted
+        global total_Patients
+        global dict_Hospital_Per_Region
+        global ifBlank
+
+        f = open(self.fileName, "w+")
+
+        f.write('Total hospitals: {0}\n'.format(total_Hospitals))
+        f.write('Total patients: {0}\n'.format(int(total_Patients)))
+        f.write('=================================================\n')
+
+        f.write('Beds: \n')
+        f.write('Occupied: {0}\n'.format(bed_Occupied))
+        f.write('Vacant: {0}\n'.format(bed_Vacant))
+        f.write('=================================================\n')
+
+        f.write('Isolation Beds: \n')
+        f.write('Occupied: {0}\n'.format(isoBeds_Occupied))
+        f.write('Vacant: {0}\n'.format(isoBeds_Vacant))
+        f.write('=================================================\n')
+
+        f.write('Mechanical Ventilators: \n')
+        f.write('Occupied by COVID Patients: {0}\n'.format(mechVent_Occupied))
+        f.write('Vacant for COVID Patients: {0}\n'.format(mechVent_Vacant))
+        f.write('Occupied by non-COVID Patients: {0}\n'.format(int(mechVent_NonCovid_Occupied)))
+        f.write('Vacant for non-COVID Patients: {0}\n'.format(int(mechVent_NonCovid_Vacant)))
+        f.write('=================================================\n')
+
+        f.write('ICU Beds: \n')
+        f.write('Occupied by COVID Patients: {0}\n'.format(icu_Occupied))
+        f.write('Vacant for COVID Patients: {0}\n'.format(icu_Vacant))
+        f.write('Occupied by non-COVID Patients: {0}\n'.format(int(icuNonCovid_Occupied)))
+        f.write('Vacant for non-COVID Patients: {0}\n'.format(int(icuNonCovid_Vacant)))
+        f.write('=================================================\n')
+
+        f.write('Health Workers Quarantined: \n')
+        f.write('Doctors: {0}\n'.format(doctorsQuarantined))
+        f.write('Nurses: {0}\n'.format(nursesQuarantined))
+        f.write('Other Staff: {0}\n'.format(othersQuarantined))
+        f.write('=================================================\n')
+
+        f.write('Health Workers Admitted: \n')
+        f.write('Doctors: {0}\n'.format(doctorsAdmitted))
+        f.write('Nurses: {0}\n'.format(nursesAdmitted))
+        f.write('Other Staff: {0}\n'.format(othersAdmitted))
+        f.write('=================================================\n')
+
+        f.write('Hospitals per region: \n')
+        for key in sorted(dict_Hospital_Per_Region.keys()):
+            item = ifBlank if key == '' else key
+            value = dict_Hospital_Per_Region[key]
+            f.write('{0} : {1}\n'.format(item, value))
+        f.write('=================================================\n')
+
+        f.close()
+
+    def printInventory(self):
+        global gown
+        global goggles
+        global gloves
+        global shoe_Cover
+        global head_Cover
+        global face_Shield
+        global surg_Mask
+        global n95_Mask
+        global coverAll
+
+        f = open(self.fileName, "w+")
+
+        f.write('Current Inventory: \n')
+        f.write('Gloves -  {0}\n'.format(bed_Occupied))
+        f.write('Goggles -  {0}\n'.format(goggles))
+        f.write('Gloves -  {0}\n'.format(gloves))
+        f.write('Shoe Cover -  {0}\n'.format(shoe_Cover))
+        f.write('Head Cover -  {0}\n'.format(head_Cover))
+        f.write('Face Shield -  {0}\n'.format(face_Shield))
+        f.write('Surgical Mask -  {0}\n'.format(surg_Mask))
+        f.write('N95 Mask -  {0}\n'.format(n95_Mask))
+        f.write('Cover All -  {0}\n'.format(coverAll))
+        f.write('=================================================\n')
+
+        f.close()
+        
 if __name__ == '__main__':
     
     #Set initial values
@@ -214,6 +451,7 @@ if __name__ == '__main__':
 
     #Set counters for Hospital status
     hospitals_data = []
+    listHospitals = []
     total_Hospitals = 0
     icu_Occupied = 0
     icu_Vacant = 0
@@ -231,38 +469,55 @@ if __name__ == '__main__':
     mechVent_NonCovid_Vacant = 0
     doctorsQuarantined = 0
     nursesQuarantined = 0
-    
+    othersQuarantined = 0
+    doctorsAdmitted = 0
+    nursesAdmitted = 0
+    othersAdmitted = 0
+    total_Patients = 0
+    dict_Hospital_Per_Region = {}
 
-    #Read files
-
-    #Cases
-    with open(cases_fname, 'r') as read_obj:
-        csv_reader = reader(read_obj)
-        header = next(csv_reader)
-        case_data = list(csv_reader)
-        # for item in csv_reader:
-        #     case_data.append(item)
-
-    #Hospitals
-    with open(hospital_status_fname, 'r') as read_obj:
-        csv_reader = reader(read_obj)
-        header = next(csv_reader)
-        hospitals_data = list(csv_reader)
-
-    # with open(file_name2, 'r') as read_obj:
-    #     csv_reader = reader(read_obj)
-    #     header = next(csv_reader)
-    #     case_data.extend(list(csv_reader))
-    # for i in range(1):
-    #     clone = case_data.copy()
-    #     case_data.extend(clone)
+    #Set counters for inventory
+    inventory_data = []
+    gown = 0
+    goggles = 0
+    gloves = 0
+    shoe_Cover = 0
+    head_Cover = 0
+    face_Shield = 0
+    surg_Mask = 0
+    n95_Mask = 0
+    coverAll = 0
 
     start_time = time.time()
     ifBlank = 'NOT STATED'
     casesFileName = 'Case_Summary.txt'
+    hospitalFileName = 'Hospital_Summary.txt'
+    inventoryFileName = 'Inventory_Summary.txt'
 
     if mode == 'S':
         
+        #Read files
+
+        #Cases
+        with open(cases_fname, 'r') as read_obj:
+            csv_reader = reader(read_obj)
+            header = next(csv_reader)
+            case_data = list(csv_reader)
+
+        #Hospitals
+        with open(hospital_status_fname, 'r') as read_obj:
+            csv_reader = reader(read_obj)
+            header = next(csv_reader)
+            hospitals_data = pd.DataFrame(list(csv_reader), columns = header)
+            hospitals_data = hospitals_data.sort_values(['cfname','updateddate'], ascending = [True, False])
+            hospitals_data = hospitals_data.values.tolist()
+
+        #Inventory
+        with open(inventory_status_fname, 'r') as read_obj:
+            csv_reader = reader(read_obj)
+            header = next(csv_reader)
+            inventory_data = list(csv_reader)
+
         for row in case_data:
             total_cases += 1
             dictAge[row[2]] += 1
@@ -284,13 +539,66 @@ if __name__ == '__main__':
 
         printInformation(casesFileName, 'cases')
 
+        for row in hospitals_data:
+            total_Hospitals += 1
+            icu_Vacant += int(row[6])
+            icu_Occupied += int(row[7])
+            isoBeds_Vacant += int(row[8])
+            isoBeds_Occupied += int(row[9])
+            bed_Vacant += int(row[10])
+            bed_Occupied += int(row[11])
+            mechVent_Vacant += int(row[12])
+            mechVent_Occupied += int(row[13])
+
+            if row[14] != '': icuNonCovid_Vacant += float(row[14])
+            if row[15] != '': icuNonCovid_Occupied += float(row[15])
+            if row[16] != '': nonICU_NonCovid_Vacant += float(row[16])
+            if row[17] != '': nonICU_NonCovid_Occupied += float(row[17])
+            if row[18] != '': mechVent_NonCovid_Vacant += float(row[18])
+            if row[19] != '': mechVent_NonCovid_Occupied += float(row[19])
+
+            nursesQuarantined += int(row[20])
+            doctorsQuarantined += int(row[21])
+            othersQuarantined += int(row[22])
+
+            nursesAdmitted += int(row[23])
+            doctorsAdmitted += int(row[24])
+            othersAdmitted += int(row[25])
+
+            if row[41] != '': total_Patients += float(row[41])
+            
+            if row[46] not in dict_Hospital_Per_Region.keys():
+                dict_Hospital_Per_Region[row[46]] = 1
+            else:
+                dict_Hospital_Per_Region[row[46]] += 1
+
+        printInformation(hospitalFileName, 'hospitals')
+
+        for row in inventory_data:
+
+            gown += int(row[6])
+            gloves += int(row[7])
+            head_Cover += int(row[8])
+            goggles += int(row[9])
+            coverAll += int(row[10])
+            shoe_Cover += int(row[11])
+            face_Shield += int(row[12])
+            surg_Mask += int(row[13])
+            n95_Mask += int(row[14])
+        
+        printInformation(inventoryFileName, 'inventory')
+
     else:
         
         casesInformationThread = caseThread(1, casesFileName)
+        hospitalsInformationThread = hospitalsThread(2, hospitalFileName)
+        inventoryInformationThread = inventoryThread(3, inventoryFileName)
         casesInformationThread.start()
+        hospitalsInformationThread.start()
+        inventoryInformationThread.start()
         casesInformationThread.join()
+        hospitalsInformationThread.join()
+        inventoryInformationThread.join()
 
     print('\n Time processed::')
     print("--- %s seconds ---" % (time.time() - start_time))
-
-
