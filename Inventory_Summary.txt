@@ -1,7 +1,7 @@
 Current Inventory: 
 Gloves -  216975769
 Goggles -  7361732
-Gloves -  216975769
+Gowns -  11208197
 Shoe Cover -  22721834
 Head Cover -  66775337
 Face Shield -  11741282

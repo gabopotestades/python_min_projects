@@ -1,0 +1,10 @@
+https://www.informit.com/articles/article.aspx?p=1850445&seqNum=9
+https://stackoverflow.com/questions/11215554/globals-variables-and-python-multiprocessing
+https://towardsdatascience.com/python-multi-threading-vs-multi-processing-1e2561eb8a24
+https://stackoverflow.com/questions/902425/does-multithreading-make-sense-for-io-bound-operations
+https://medium.com/towards-artificial-intelligence/the-why-when-and-how-of-using-python-multi-threading-and-multi-processing-afd1b8a8ecca
+https://stackoverflow.com/questions/11215554/globals-variables-and-python-multiprocessing
+
+
+"C:\Program Files\PuTTY\pscp.exe" -scp Main.py gpotestades@103.231.240.131:10148
+fTINjQlZ
