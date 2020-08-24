@@ -10,3 +10,6 @@ Threading for DOH COVID Data/__pycache__
 Threading for DOH COVID Data/cases.csv
 Threading for DOH COVID Data/hospitals.csv
 Threading for DOH COVID Data/inventory.csv
+cases.csv
+hospitals.csv
+inventory.csv

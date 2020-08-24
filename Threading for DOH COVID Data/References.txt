@@ -4,6 +4,8 @@ https://towardsdatascience.com/python-multi-threading-vs-multi-processing-1e2561
 https://stackoverflow.com/questions/902425/does-multithreading-make-sense-for-io-bound-operations
 https://medium.com/towards-artificial-intelligence/the-why-when-and-how-of-using-python-multi-threading-and-multi-processing-afd1b8a8ecca
 https://stackoverflow.com/questions/11215554/globals-variables-and-python-multiprocessing
+https://stackoverflow.com/questions/868568/what-do-the-terms-cpu-bound-and-i-o-bound-mean#:~:text=A%20program%20is%20CPU%20bound,bound%2C%20it's%20just%20crunching%20numbers.
+https://medium.com/towards-artificial-intelligence/the-why-when-and-how-of-using-python-multi-threading-and-multi-processing-afd1b8a8ecca
 
 
 "C:\Program Files\PuTTY\pscp.exe" -scp Main.py gpotestades@103.231.240.131:10148
