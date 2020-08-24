@@ -307,9 +307,9 @@ surg_Mask = 0
 n95_Mask = 0
 coverAll = 0
 
-cases_fname = 'Threading for DOH COVID Data\cases.csv'
-hospital_status_fname = 'Threading for DOH COVID Data\hospitals.csv'
-inventory_status_fname = 'Threading for DOH COVID Data\inventory.csv'
+cases_fname = 'cases.csv'
+hospital_status_fname = 'hospitals.csv'
+inventory_status_fname = 'inventory.csv'
 
 casesFileName = 'Case_Summary.txt'
 hospitalFileName = 'Hospital_Summary.txt'
@@ -317,13 +317,13 @@ inventoryFileName = 'Inventory_Summary.txt'
 
 #Read files
 #Cases
-with open(cases_fname, 'r') as read_obj:
+with open(cases_fname, 'r', encoding='utf-8') as read_obj:
     csv_reader = reader(read_obj)
     header = next(csv_reader)
     case_data = list(csv_reader)
 
 #Hospitals
-with open(hospital_status_fname, 'r') as read_obj:
+with open(hospital_status_fname, 'r', encoding='utf-8') as read_obj:
     csv_reader = reader(read_obj)
     header = next(csv_reader)
     hospitals_data = pd.DataFrame(list(csv_reader), columns = header)
@@ -331,7 +331,7 @@ with open(hospital_status_fname, 'r') as read_obj:
     hospitals_data = hospitals_data.values.tolist()
 
 #Inventory
-with open(inventory_status_fname, 'r') as read_obj:
+with open(inventory_status_fname, 'r', encoding='utf-8') as read_obj:
     csv_reader = reader(read_obj)
     header = next(csv_reader)
     inventory_data = list(csv_reader)

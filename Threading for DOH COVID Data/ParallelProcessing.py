@@ -72,10 +72,10 @@ class caseProcess(multiprocessing.Process):
         }
         dictCasesPerRegion = {}
 
-        cases_fname = 'Threading for DOH COVID Data\cases.csv'
+        cases_fname = 'cases.csv'
     
         #Cases
-        with open(cases_fname, 'r') as read_obj:
+        with open(cases_fname, 'r', encoding='utf-8') as read_obj:
             csv_reader = reader(read_obj)
             header = next(csv_reader)
             case_data = list(csv_reader)
@@ -205,10 +205,10 @@ class hospitalsProcess(multiprocessing.Process):
         othersAdmitted = 0
         total_Patients = 0
         dict_Hospital_Per_Region = {}
-        hospital_status_fname = 'Threading for DOH COVID Data\hospitals.csv'
+        hospital_status_fname = 'hospitals.csv'
         
         #Hospitals
-        with open(hospital_status_fname, 'r') as read_obj:
+        with open(hospital_status_fname, 'r', encoding='utf-8') as read_obj:
             csv_reader = reader(read_obj)
             header = next(csv_reader)
             hospitals_data = pd.DataFrame(list(csv_reader), columns = header)
@@ -323,10 +323,10 @@ class inventoryProcess(multiprocessing.Process):
         n95_Mask = 0
         coverAll = 0
 
-        inventory_status_fname = 'Threading for DOH COVID Data\inventory.csv'
+        inventory_status_fname = 'inventory.csv'
 
         #Inventory
-        with open(inventory_status_fname, 'r') as read_obj:
+        with open(inventory_status_fname, 'r', encoding='utf-8') as read_obj:
             csv_reader = reader(read_obj)
             header = next(csv_reader)
             inventory_data = list(csv_reader)

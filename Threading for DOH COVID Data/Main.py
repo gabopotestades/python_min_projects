@@ -12,15 +12,15 @@ if __name__ == '__main__':
     inventoryFileName = 'Inventory_Summary.txt'
 
     #Choose S for serial and P for parallel
-    while mode not in ['S', 'P', 'C']:
+    while mode not in ['S', 'P', 'T']:
         os.system(command)
-        mode = input('Select mode (S/C/P): ').upper()
+        mode = input('Select mode (S/T/P): ').upper()
 
     start_time = time.time()
 
     if mode == 'S':
         import SerialProcessing
-    elif mode == 'C':
+    elif mode == 'T':
         
         import ThreadProcessing
         casesInformationThread = ThreadProcessing.caseThread(1, casesFileName)
@@ -58,7 +58,7 @@ if __name__ == '__main__':
         f = open('Serial_Testing.txt', 'a+')
         f.write(str(end_time)+'\n')
         f.close()
-    elif mode == 'C':
+    elif mode == 'T':
         f = open('Threading_Testing.txt', 'a+')
         f.write(str(end_time)+'\n')
         f.close()

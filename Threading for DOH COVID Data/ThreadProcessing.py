@@ -3,9 +3,9 @@ import threading
 import pandas as pd
 from csv import reader
 
-cases_fname = 'Threading for DOH COVID Data\cases.csv'
-hospital_status_fname = 'Threading for DOH COVID Data\hospitals.csv'
-inventory_status_fname = 'Threading for DOH COVID Data\inventory.csv'
+cases_fname = 'cases.csv'
+hospital_status_fname = 'hospitals.csv'
+inventory_status_fname = 'inventory.csv'
 
 casesFileName = 'Case_Summary.txt'
 hospitalFileName = 'Hospital_Summary.txt'
@@ -148,7 +148,7 @@ class caseThread(threading.Thread):
         global dictCasesPerRegion
 
         #Cases
-        with open(cases_fname, 'r') as read_obj:
+        with open(cases_fname, 'r', encoding='utf-8') as read_obj:
             csv_reader = reader(read_obj)
             header = next(csv_reader)
             case_data = list(csv_reader)
@@ -240,7 +240,7 @@ class hospitalsThread(threading.Thread):
         global dict_Hospital_Per_Region
 
         #Hospitals
-        with open(hospital_status_fname, 'r') as read_obj:
+        with open(hospital_status_fname, 'r', encoding='utf-8') as read_obj:
             csv_reader = reader(read_obj)
             header = next(csv_reader)
             hospitals_data = pd.DataFrame(list(csv_reader), columns = header)
@@ -306,7 +306,7 @@ class inventoryThread(threading.Thread):
         global coverAll
 
         #Inventory
-        with open(inventory_status_fname, 'r') as read_obj:
+        with open(inventory_status_fname, 'r', encoding='utf-8') as read_obj:
             csv_reader = reader(read_obj)
             header = next(csv_reader)
             inventory_data = list(csv_reader)
