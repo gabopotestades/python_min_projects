@@ -1,5 +1,32 @@
 import os
 import time
+import linecache
+from guppy import hpy
+
+def display_top(snapshot, key_type='lineno', limit=5):
+    snapshot = snapshot.filter_traces((
+        tracemalloc.Filter(False, "<frozen importlib._bootstrap>"),
+        tracemalloc.Filter(False, "<unknown>"),
+    ))
+    top_stats = snapshot.statistics(key_type)
+
+    print("Top %s lines" % limit)
+    for index, stat in enumerate(top_stats[:limit], 1):
+        frame = stat.traceback[0]
+        # replace "/path/to/module/file.py" with "module/file.py"
+        filename = os.sep.join(frame.filename.split(os.sep)[-2:])
+        print("#%s: %s:%s: %.1f KiB"
+              % (index, filename, frame.lineno, stat.size / 1024))
+        line = linecache.getline(frame.filename, frame.lineno).strip()
+        if line:
+            print('    %s' % line)
+
+    other = top_stats[limit:]
+    if other:
+        size = sum(stat.size for stat in other)
+        print("%s other: %.1f KiB" % (len(other), size / 1024))
+    total = sum(stat.size for stat in top_stats)
+    print("Total allocated size: %.1f KiB" % (total / 1024))
 
 if __name__ == '__main__':
     
@@ -17,6 +44,8 @@ if __name__ == '__main__':
         mode = input('Select mode (S/T/P): ').upper()
 
     start_time = time.time()
+    #tracemalloc.start()
+    h = hpy()
 
     if mode == 'S':
         import SerialProcessing
@@ -53,6 +82,8 @@ if __name__ == '__main__':
     print('\n Time processed:')
     end_time = time.time() - start_time
     print("--- %s seconds ---" % end_time)
+
+    print(h.heap())
 
     if mode == 'S':
         f = open('Serial_Testing.txt', 'a+')
