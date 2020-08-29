@@ -1,5 +1,5 @@
 Total hospitals: 1914
-Total patients: 58664
+Total patients: 56108
 =================================================
 Beds: 
 Occupied: 2234
@@ -20,6 +20,10 @@ Occupied by COVID Patients: 802
 Vacant for COVID Patients: 668
 Occupied by non-COVID Patients: 2924
 Vacant for non-COVID Patients: 3389
+=================================================
+Non-ICU Beds: 
+Occupied by non-COVID Patients: 41183
+Vacant for non-COVID Patients: 42134
 =================================================
 Health Workers Quarantined: 
 Doctors: 1179

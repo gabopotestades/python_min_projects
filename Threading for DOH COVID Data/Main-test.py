@@ -1,6 +1,7 @@
 import os
 import time
 import linecache
+from guppy import hpy
 
 if __name__ == '__main__':
     
@@ -18,6 +19,8 @@ if __name__ == '__main__':
         mode = input('Select mode (S/T/P): ').upper()
 
     start_time = time.time()
+    #tracemalloc.start()
+    h = hpy()
 
     if mode == 'S':
         import SerialProcessing
@@ -51,6 +54,17 @@ if __name__ == '__main__':
         hospitalsInformationProcess.join()
         inventoryInformationProcess.join()
 
-    print('\n Time processed:')
     end_time = time.time() - start_time
+    print('\n Time processed:')
     print("--- %s seconds ---" % end_time)
+
+    mem_usage = h.heap()
+    
+    txt_file = ''
+    if mode == 'S': txt_file = 'Serial_Testing.txt'
+    elif mode == 'T': txt_file = 'Thread_Testing.txt'
+    else: txt_file = 'Process_Testing.txt'
+    
+    f = open(txt_file, 'a+')
+    f.write(str(end_time)+'\t\t' + str(mem_usage.size) +' bytes\n')
+    f.close()

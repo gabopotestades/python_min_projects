@@ -206,6 +206,7 @@ class hospitalsProcess(multiprocessing.Process):
         total_Patients = 0
         dict_Hospital_Per_Region = {}
         hospital_status_fname = 'hospitals.csv'
+        ifBlank = 'NOT STATED'
         
         #Hospitals
         with open(hospital_status_fname, 'r', encoding='utf-8') as read_obj:
@@ -246,7 +247,7 @@ class hospitalsProcess(multiprocessing.Process):
             doctorsAdmitted += int(row[24])
             othersAdmitted += int(row[25])
 
-            if row[41] != '': total_Patients += float(row[41])
+            #if row[41] != '': total_Patients += float(row[41])
             
             if row[46] not in dict_Hospital_Per_Region.keys():
                 dict_Hospital_Per_Region[row[46]] = 1
@@ -254,7 +255,12 @@ class hospitalsProcess(multiprocessing.Process):
                 dict_Hospital_Per_Region[row[46]] += 1
      
         hospitalFileName = 'Hospital_Summary.txt'
-        f = open(hospitalFileName, "w+")
+
+        total_Patients = icu_Occupied + bed_Occupied + isoBeds_Occupied + mechVent_Occupied + \
+        icuNonCovid_Occupied + nonICU_NonCovid_Occupied + mechVent_NonCovid_Occupied + doctorsAdmitted + \
+        othersAdmitted + nursesAdmitted
+
+        f = open(self.fileName, "w+")
 
         f.write('Total hospitals: {0}\n'.format(total_Hospitals))
         f.write('Total patients: {0}\n'.format(int(total_Patients)))
@@ -284,6 +290,11 @@ class hospitalsProcess(multiprocessing.Process):
         f.write('Vacant for non-COVID Patients: {0}\n'.format(int(icuNonCovid_Vacant)))
         f.write('=================================================\n')
 
+        f.write('Non-ICU Beds: \n')
+        f.write('Occupied by non-COVID Patients: {0}\n'.format(int(nonICU_NonCovid_Occupied)))
+        f.write('Vacant for non-COVID Patients: {0}\n'.format(int(nonICU_NonCovid_Vacant)))
+        f.write('=================================================\n')
+
         f.write('Health Workers Quarantined: \n')
         f.write('Doctors: {0}\n'.format(doctorsQuarantined))
         f.write('Nurses: {0}\n'.format(nursesQuarantined))
@@ -297,7 +308,6 @@ class hospitalsProcess(multiprocessing.Process):
         f.write('=================================================\n')
 
         f.write('Hospitals per region: \n')
-        ifBlank = 'NOT STATED'
         for key in sorted(dict_Hospital_Per_Region.keys()):
             item = ifBlank if key == '' else key
             value = dict_Hospital_Per_Region[key]

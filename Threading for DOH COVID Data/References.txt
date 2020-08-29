@@ -8,7 +8,17 @@ https://stackoverflow.com/questions/868568/what-do-the-terms-cpu-bound-and-i-o-b
 https://medium.com/towards-artificial-intelligence/the-why-when-and-how-of-using-python-multi-threading-and-multi-processing-afd1b8a8ecca
 https://www.youtube.com/watch?v=QRF1637j6NU
 https://www.backblaze.com/blog/whats-the-diff-programs-processes-and-threads/
+https://newsroom.intel.com/wp-content/uploads/sites/11/2018/05/moores-law-electronics.pdf
 
 
-"C:\Program Files\PuTTY\pscp.exe" -scp Main.py gpotestades@103.231.240.131:10148
+"C:\Program Files\PuTTY\pscp.exe" -scp Main.py gpotestades@103.231.240.131:
 fTINjQlZ
+
+
+
+100%
+103%
+23% 22% 0.1%
+
+100%
+103% 20.9

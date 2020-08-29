@@ -110,6 +110,10 @@ class printInformation():
         global dict_Hospital_Per_Region
         global ifBlank
 
+        total_Patients = icu_Occupied + bed_Occupied + isoBeds_Occupied + mechVent_Occupied + \
+        icuNonCovid_Occupied + nonICU_NonCovid_Occupied + mechVent_NonCovid_Occupied + doctorsAdmitted + \
+        othersAdmitted + nursesAdmitted
+
         f = open(self.fileName, "w+")
 
         f.write('Total hospitals: {0}\n'.format(total_Hospitals))
@@ -138,6 +142,11 @@ class printInformation():
         f.write('Vacant for COVID Patients: {0}\n'.format(icu_Vacant))
         f.write('Occupied by non-COVID Patients: {0}\n'.format(int(icuNonCovid_Occupied)))
         f.write('Vacant for non-COVID Patients: {0}\n'.format(int(icuNonCovid_Vacant)))
+        f.write('=================================================\n')
+
+        f.write('Non-ICU Beds: \n')
+        f.write('Occupied by non-COVID Patients: {0}\n'.format(int(nonICU_NonCovid_Occupied)))
+        f.write('Vacant for non-COVID Patients: {0}\n'.format(int(nonICU_NonCovid_Vacant)))
         f.write('=================================================\n')
 
         f.write('Health Workers Quarantined: \n')
@@ -387,8 +396,6 @@ for row in hospitals_data:
     nursesAdmitted += int(row[23])
     doctorsAdmitted += int(row[24])
     othersAdmitted += int(row[25])
-
-    if row[41] != '': total_Patients += float(row[41])
     
     if row[46] not in dict_Hospital_Per_Region.keys():
         dict_Hospital_Per_Region[row[46]] = 1
