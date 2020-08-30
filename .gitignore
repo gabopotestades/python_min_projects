@@ -2,3 +2,4 @@ Threading for DOH COVID Data/*.csv
 Threading for DOH COVID Data/*.png
 Threading for DOH COVID Data/__pycache__
 *.csv
+*.txt

@@ -306,6 +306,7 @@ dict_Hospital_Per_Region = {}
 
 #Set counters for inventory
 inventory_data = []
+invenHospitals = []
 gown = 0
 goggles = 0
 gloves = 0
@@ -343,7 +344,9 @@ with open(hospital_status_fname, 'r', encoding='utf-8') as read_obj:
 with open(inventory_status_fname, 'r', encoding='utf-8') as read_obj:
     csv_reader = reader(read_obj)
     header = next(csv_reader)
-    inventory_data = list(csv_reader)
+    inventory_data = pd.DataFrame(list(csv_reader), columns = header)
+    inventory_data = inventory_data.sort_values(['cfname','updateddate'], ascending = [True, False])
+    inventory_data = inventory_data.values.tolist()
 
 for row in case_data:
     total_cases += 1
@@ -405,7 +408,11 @@ for row in hospitals_data:
 printInformation(hospitalFileName, 'hospitals')
 
 for row in inventory_data:
-    
+
+    if row[2] in invenHospitals:
+        continue
+
+    invenHospitals.append(row[2])
     gown += int(row[6])
     gloves += int(row[7])
     head_Cover += int(row[8])
