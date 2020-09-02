@@ -3,6 +3,7 @@ import time
 import linecache
 from guppy import hpy
 
+#For testing purposes
 if __name__ == '__main__':
     
     #Set initial values
@@ -42,9 +43,9 @@ if __name__ == '__main__':
     elif mode == 'P':
 
         import ParallelProcessing
-        casesInformationProcess = ParallelProcessing.caseProcess(1, casesFileName)
-        hospitalsInformationProcess = ParallelProcessing.hospitalsProcess(2, hospitalFileName)
-        inventoryInformationProcess = ParallelProcessing.inventoryProcess(3, inventoryFileName)
+        casesInformationProcess = ParallelProcessing.caseProcess(1, casesFileName, True)
+        hospitalsInformationProcess = ParallelProcessing.hospitalsProcess(2, hospitalFileName, True)
+        inventoryInformationProcess = ParallelProcessing.inventoryProcess(3, inventoryFileName, True)
 
         casesInformationProcess.start()
         hospitalsInformationProcess.start()

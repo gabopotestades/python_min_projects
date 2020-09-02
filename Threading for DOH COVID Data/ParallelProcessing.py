@@ -1,14 +1,18 @@
 import datetime
 import pandas as pd
+from guppy import hpy
 import multiprocessing
 from csv import reader
 
 class caseProcess(multiprocessing.Process):
-    def __init__(self, threadID, fileName):
+    def __init__(self, threadID, fileName, test = False):
         multiprocessing.Process.__init__(self)
         self.id = threadID
         self.fileName = fileName
+        self.test = test
     def run(self):
+        if self.test:
+            h = hpy()
         case_data = []
         total_cases = 0
         dictAge = {
@@ -173,12 +177,21 @@ class caseProcess(multiprocessing.Process):
 
         f.close()
 
+        if self.test:
+            mem_usage = h.heap()
+            f = open('Cases_Parallel_Mem.txt', 'a+')
+            f.write(str(mem_usage.size) + '\n')
+            f.close()
+
 class hospitalsProcess(multiprocessing.Process):
-    def __init__(self, threadID, fileName):
+    def __init__(self, threadID, fileName, test = False):
         multiprocessing.Process.__init__(self)
         self.id = threadID
         self.fileName = fileName
+        self.test = test
     def run(self):
+        if self.test:
+            h = hpy()
         #Set counters for Hospital status
         hospitals_data = []
         listHospitals = []
@@ -316,12 +329,21 @@ class hospitalsProcess(multiprocessing.Process):
 
         f.close()
 
+        if self.test:
+            mem_usage = h.heap()
+            f = open('Hosp_Parallel_Mem.txt', 'a+')
+            f.write(str(mem_usage.size) + '\n')
+            f.close()
+
 class inventoryProcess(multiprocessing.Process):
-    def __init__(self, threadID, fileName):
+    def __init__(self, threadID, fileName, test = False):
         multiprocessing.Process.__init__(self)
         self.id = threadID
         self.fileName = fileName
+        self.test = test
     def run(self):
+        if self.test:
+            h = hpy()
         inventory_data = []
         invenHospitals = []
         gown = 0
@@ -376,3 +398,9 @@ class inventoryProcess(multiprocessing.Process):
         f.write('=================================================\n')
 
         f.close()
+
+        if self.test:
+            mem_usage = h.heap()
+            f = open('Inven_Parallel_Mem.txt', 'a+')
+            f.write(str(mem_usage.size) + '\n')
+            f.close()
