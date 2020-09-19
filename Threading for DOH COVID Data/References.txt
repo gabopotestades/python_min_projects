@@ -13,10 +13,10 @@ https://www.backblaze.com/blog/whats-the-diff-programs-processes-and-threads/
 [5]https://www.booleanworld.com/guide-linux-top-command/
 
 
-"C:\Program Files\PuTTY\pscp.exe" -scp *g.py gpotestades@103.231.240.131:
+"C:\Program Files\PuTTY\pscp.exe" -scp Par*.py gpotestades@103.231.240.131:
 fTINjQlZ
 
-
+ls -1 | sort
 
 Serial:
 923376
