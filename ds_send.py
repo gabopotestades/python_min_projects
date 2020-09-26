@@ -74,14 +74,14 @@ class RabbitMq():
 
 if __name__ == "__main__":
 
-    serverConfig = RabbitMqConfigure(queue= 'RBMQ', 
-                               host= '192.168.0.148',
-                               port= 5672,
-                               username= 'rabbituser',
-                               password='rabbit1234',
-                               routingKey= 'RBMQ', 
-                               exchange= '')
-    # serverConfig = RabbitMqConfigure()
+    # serverConfig = RabbitMqConfigure(queue= 'RBMQ', 
+    #                            host= '192.168.0.148',
+    #                            port= 5672,
+    #                            username= 'rabbituser',
+    #                            password='rabbit1234',
+    #                            routingKey= 'RBMQ', 
+    #                            exchange= '')
+    serverConfig = RabbitMqConfigure()
     messageQueue = RabbitMq(serverConfig)
     cases_response = messageQueue.publish(msg='cases')
     hospitals_response = messageQueue.publish(msg='hospitals')

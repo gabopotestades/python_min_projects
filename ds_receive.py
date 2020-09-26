@@ -115,9 +115,9 @@ class RabbitMqServer():
 
 if __name__ == '__main__':
 
-    serverConfig = RabbitMqServerConfigure(host= '192.168.0.148', port= 5672,
-                                           username= 'rabbituser', password= 'rabbit1234', 
-                                           queue= 'RBMQ', exchange= '')
-    #serverConfig = RabbitMqServerConfigure()
+    # serverConfig = RabbitMqServerConfigure(host= '192.168.0.148', port= 5672,
+    #                                        username= 'rabbituser', password= 'rabbit1234', 
+    #                                        queue= 'RBMQ', exchange= '')
+    serverConfig = RabbitMqServerConfigure()
     messageQueueServer = RabbitMqServer(serverConfig)
     messageQueueServer.startServer()
