@@ -13,8 +13,9 @@ class MetaClass(type):
 class RabbitMqConfigure(metaclass= MetaClass):
 
     #Initialize message queue parameters
-    def __init__(self, queue= 'MQ', host = 'localhost', port = 5672, 
-                 username = 'guest', password = 'guest', routingKey = 'MQ', exchange = ''):
+    def __init__(self, queue= '', host = 'localhost', port = 5672, 
+                 username = 'guest', password = 'guest', routingKey = '', 
+                 exchange = 'topic_logs', exchange_type='topic'):
         self.queue = queue
         self.host = host
         self.port = port
@@ -22,40 +23,40 @@ class RabbitMqConfigure(metaclass= MetaClass):
         self.password = password
         self.routingKey = routingKey
         self.exchange = exchange
+        self.exchange_type = exchange_type
 
 class RabbitMq():
     
-    #Creattion of message queue using RabbitMqConfig
+    #Creation of message queue using RabbitMqConfig
     def __init__(self, server):
         self.server = server
         self.response = None
-        self.cases_response = None
-        self.hospitals_response = None
-        self.inventory_response = None
         self._credentials = pika.PlainCredentials(self.server.username, self.server.password)
         self._connectParameters = pika.ConnectionParameters(self.server.host, self.server.port,
                                                             '/', self._credentials)
         self._connection = pika.BlockingConnection(self._connectParameters)
         self._channel = self._connection.channel()
-        self._result = self._channel.queue_declare(queue=self.server.queue, durable= True)
+        self._channel.exchange_declare(exchange=self.server.exchange, exchange_type=self.server.exchange_type)
+        
+        self._result = self._channel.queue_declare(queue=self.server.queue, durable= True, exclusive=True)
         self._callback_queue = self._result.method.queue
 
         self._channel.basic_consume(queue=self._callback_queue, 
                                     on_message_callback=self.on_response, auto_ack=True)
+        self._channel.queue_bind(exchange=self.server.exchange, 
+                            queue=self._result.method.queue,
+                            routing_key=self._callback_queue)
 
     def on_response(self, ch, method, props, body):
         if self.corr_id == props.correlation_id: 
             self.response = str(body.decode())
-            self.cases_response = None
-            self.hospitals_response = None
-            self.inventory_response = None
 
-
-    def publish(self, msg):
-
+    def publish(self, msg, routing_key):
+        
+        self.response = None
         self.corr_id = str(uuid.uuid4())
         self._channel.basic_publish(exchange=self.server.exchange,
-                                    routing_key=self.server.routingKey,
+                                    routing_key=routing_key,
                                     body=str(msg),
                                     properties=pika.BasicProperties(
                                         reply_to=self._callback_queue,
@@ -64,7 +65,7 @@ class RabbitMq():
                                     ))
         print('[x] Sent message to execute: {}'.format(msg))
 
-        while self.response != msg:
+        while self.response == None:
             self._connection.process_data_events()     
         
         return str(self.response)
@@ -74,32 +75,19 @@ class RabbitMq():
 
 if __name__ == "__main__":
 
-    serverConfig = RabbitMqConfigure(queue= 'RBMQ', 
-                               host= '192.168.0.148',
-                               port= 5672,
-                               username= 'rabbituser',
-                               password='rabbit1234',
-                               routingKey= 'RBMQ', 
-                               exchange= '')
-    # serverConfig = RabbitMqConfigure()
+    serverConfig = RabbitMqConfigure(host= '192.168.0.148', 
+                                     port= 5672,
+                                     username= 'rabbituser', 
+                                     password= 'rabbit1234')
+
+    #serverConfig = RabbitMqConfigure(queue='')
     messageQueue = RabbitMq(serverConfig)
-    cases_response = messageQueue.publish(msg='cases')
-    hospitals_response = messageQueue.publish(msg='hospitals')
-    inventory_response = messageQueue.publish(msg='inventory')
+    cases_response = messageQueue.publish(msg='cases', routing_key = 'light.cases')
+    hospitals_response = messageQueue.publish(msg='hospitals', routing_key = 'heavy.hospitals')
+    inventory_response = messageQueue.publish(msg='inventory', routing_key = 'light.inventory')
     
     print(" [.] Response for cases processing: %s" % cases_response)
     print(" [.] Response for hospitals processing: %s" % hospitals_response)
     print(" [.] Response for inventory processing: %s" % inventory_response)
-
-    # shared_resource_lock=threading.Lock() 
-    # param_list = ['cases', 'hospitals']#, 'inventory']
-
-    # with concurrent.futures.ThreadPoolExecutor() as executor:
-    #     futures = [executor.submit(messageQueue.publish, param) for param in param_list]
-
-    #     executor.shutdown()
-    
-    # return_values = [f.result() for f in futures]
-    # print(return_values)
 
     messageQueue.close()
