@@ -11,7 +11,7 @@ class caseProcess(multiprocessing.Process):
         self.id = threadID
         self.fileName = fileName
         self.pipe = pipe
-        self.test = False
+        self.test = test
 
     def run(self):
         try:
