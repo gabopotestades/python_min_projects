@@ -42,7 +42,11 @@ class RabbitMqServer():
         self._channel = self._connection.channel()
 
         self._channel.exchange_declare(exchange=self.server.exchange, exchange_type=self.server.exchange_type)
-        self.result = self._channel.queue_declare(queue=self.server.queue, durable=True)
+        # try:
+        #     self._channel.queue_delete(queue=self.server.queue)
+        # except:
+        #     pass
+        self.result = self._channel.queue_declare(queue=self.server.queue)#, durable=True)
         self._channel.queue_bind(exchange=self.server.exchange, 
                                  queue=self.result.method.queue,
                                  routing_key=self.server.routing_key)
@@ -141,18 +145,17 @@ class RabbitMqServer():
 if __name__ == '__main__':
 
     rKey = str((sys.argv[1:])[0])
-    #rKey = 'light.*'
     if rKey not in ['#', '*.*']: 
         queue = ''.join(e for e in rKey if e.isalnum()) + '_queue'
     else:
         queue = 'test_queue'
 
-    serverConfig = RabbitMqServerConfigure(host= '192.168.0.148', 
-                                           port= 5672,
-                                           username= 'rabbituser', 
-                                           password= 'rabbit1234', 
-                                           queue=queue,
-                                           routingKey=rKey)
-    #serverConfig = RabbitMqServerConfigure(routingKey=rKey, queue=queue)
-    messageQueueServer = RabbitMqServer(serverConfig, True)
+    # serverConfig = RabbitMqServerConfigure(host= '192.168.0.148', 
+    #                                        port= 5672,
+    #                                        username= 'rabbituser', 
+    #                                        password= 'rabbit1234', 
+    #                                        queue=queue,
+    #                                        routingKey=rKey)
+    serverConfig = RabbitMqServerConfigure(routingKey=rKey, queue=queue)
+    messageQueueServer = RabbitMqServer(serverConfig, False)
     messageQueueServer.startServer()

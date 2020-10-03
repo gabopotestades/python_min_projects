@@ -13,7 +13,7 @@ class MetaClass(type):
 class RabbitMqConfigure(metaclass= MetaClass):
 
     #Initialize message queue parameters
-    def __init__(self, queue= '', host = 'localhost', port = 5672, 
+    def __init__(self, queue= 'response_queue', host = 'localhost', port = 5672, 
                  username = 'guest', password = 'guest', routingKey = '', 
                  exchange = 'topic_logs', exchange_type='topic'):
         self.queue = queue
@@ -40,7 +40,11 @@ class RabbitMq():
         self._channel = self._connection.channel()
         self._channel.exchange_declare(exchange=self.server.exchange, exchange_type=self.server.exchange_type)
         
-        self._result = self._channel.queue_declare(queue=self.server.queue, durable= True)
+        # try:
+        #     self._channel.queue_delete(queue=self.server.queue)
+        # except:
+        #     pass
+        self._result = self._channel.queue_declare(queue=self.server.queue)#, durable= True)
         self._callback_queue = self._result.method.queue
 
         #self._channel.basic_qos(prefetch_count=3)
@@ -88,11 +92,11 @@ class RabbitMq():
 
 if __name__ == "__main__":
 
-    serverConfig = RabbitMqConfigure(host= '192.168.0.148', 
-                                     port= 5672,
-                                     username= 'rabbituser', 
-                                     password= 'rabbit1234')
-    #serverConfig = RabbitMqConfigure(queue='response_queue')
+    # serverConfig = RabbitMqConfigure(host= '192.168.0.148', 
+    #                                  port= 5672,
+    #                                  username= 'rabbituser', 
+    #                                  password= 'rabbit1234')
+    serverConfig = RabbitMqConfigure(queue='response_queue')
     messageQueue = RabbitMq(serverConfig)
 
     cases_response = messageQueue.publish(msg='cases', routing_key = 'light.cases')
