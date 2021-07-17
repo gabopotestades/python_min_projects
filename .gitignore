@@ -5,4 +5,4 @@ Threading for DOH COVID Data/__pycache__
 *.txt
 __pycache__
 Disstributed System\__pycache__
-*.py
+ds*.py
